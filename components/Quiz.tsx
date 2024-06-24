@@ -15,19 +15,19 @@ const Quiz = ({ questions, userId }: QuizProps) => {
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [checked, setChecked] = useState(false);
-  const [selectedAnswerIndex, setSelectedAnswerIndex] =
-    useState<number | null>(null);
+  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(
+    null
+  );
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState({
     score: 0,
     correctAnswers: 0,
     wrongAnswers: 0,
   });
-  const [timeRemaining, setTimeRemaining] = useState(25);
+  const [timeRemaining, setTimeRemaining] = useState(60);
   const [timerRunning, setTimerRunning] = useState(false);
 
-  const { question, answers, correctAnswer } =
-    questions[activeQuestion];
+  const { question, answers, correctAnswer } = questions[activeQuestion];
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -67,10 +67,7 @@ const Quiz = ({ questions, userId }: QuizProps) => {
     };
   }, []);
 
-  const onAnswerSelected = (
-    answer: string,
-    idx: number
-  ) => {
+  const onAnswerSelected = (answer: string, idx: number) => {
     setChecked(true);
     setSelectedAnswerIndex(idx);
     if (answer === correctAnswer) {
@@ -113,23 +110,15 @@ const Quiz = ({ questions, userId }: QuizProps) => {
       })
         .then((response) => {
           if (!response.ok) {
-            throw new Error(
-              "Network response was not working fam"
-            );
+            throw new Error("Network response was not working fam");
           }
           return response.json();
         })
         .then((data) => {
-          console.log(
-            "Quiz results saved successfully:",
-            data
-          );
+          console.log("Quiz results saved successfully:", data);
         })
         .catch((error) => {
-          console.error(
-            "Error saving quiz results:",
-            error
-          );
+          console.error("Error saving quiz results:", error);
         });
     }
     setChecked(false);
@@ -141,7 +130,7 @@ const Quiz = ({ questions, userId }: QuizProps) => {
       <div className="max-w-[1500px] mx-auto w-[90%] flex justify-center py-10 flex-col">
         {!showResults ? (
           <>
-            <div className="flex justify-between mb-10 items-center">
+            <div className="flex justify-between mb-10 max-md:flex-col max-md: gap-2 items-center">
               <div className="bg-primary text-white px-4 rounded-md py-1">
                 <h2>
                   Question: {activeQuestion + 1}
@@ -155,28 +144,19 @@ const Quiz = ({ questions, userId }: QuizProps) => {
             </div>
 
             <div>
-              <h3 className="mb-5 text-2xl font-bold">
-                {question}
-              </h3>
+              <h3 className="mb-5 text-2xl font-bold">{question}</h3>
               <ul>
-                {answers.map(
-                  (answer: string, idx: number) => (
-                    <li
-                      key={idx}
-                      onClick={() =>
-                        onAnswerSelected(answer, idx)
-                      }
-                      className={`cursor-pointer mb-5 py-3 rounded-md hover:bg-primary hover:text-white px-3
-                      ${
-                        selectedAnswerIndex === idx &&
-                        "bg-primary text-white"
-                      }
+                {answers.map((answer: string, idx: number) => (
+                  <li
+                    key={idx}
+                    onClick={() => onAnswerSelected(answer, idx)}
+                    className={`cursor-pointer mb-5 py-3 rounded-md hover:bg-primary hover:text-white px-3
+                      ${selectedAnswerIndex === idx && "bg-primary text-white"}
                       `}
-                    >
-                      <span>{answer}</span>
-                    </li>
-                  )
-                )}
+                  >
+                    <span>{answer}</span>
+                  </li>
+                ))}
               </ul>
               <button
                 onClick={nextQuestion}
@@ -191,30 +171,19 @@ const Quiz = ({ questions, userId }: QuizProps) => {
           </>
         ) : (
           <div className="text-center">
-            <h3 className="text-2xl uppercase mb-10">
-              Results 📈
-            </h3>
+            <h3 className="text-2xl uppercase mb-10">Results 📈</h3>
             <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-10">
               <StatCard
                 title="Percentage"
                 value={`${(results.score / 50) * 100}%`}
               />
-              <StatCard
-                title="Total Questions"
-                value={questions.length}
-              />
-              <StatCard
-                title=" Total Score"
-                value={results.score}
-              />
+              <StatCard title="Total Questions" value={questions.length} />
+              <StatCard title=" Total Score" value={results.score} />
               <StatCard
                 title="Correct Answers"
                 value={results.correctAnswers}
               />
-              <StatCard
-                title="Wrong Answers"
-                value={results.wrongAnswers}
-              />
+              <StatCard title="Wrong Answers" value={results.wrongAnswers} />
             </div>
             <button
               onClick={() => window.location.reload()}

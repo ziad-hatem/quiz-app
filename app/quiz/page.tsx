@@ -13,7 +13,11 @@ async function getData() {
 
   const data = await client.fetch(query);
 
-  return data;
+  // Shuffle the questions and select 10 random ones
+  const shuffledData = data.sort(() => 0.5 - Math.random());
+  const selectedQuestions = shuffledData.slice(0, 10);
+
+  return selectedQuestions;
 }
 
 const page = async () => {

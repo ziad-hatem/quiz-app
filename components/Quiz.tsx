@@ -28,6 +28,7 @@ const Quiz = ({ questions, userId }: QuizProps) => {
   const [timerRunning, setTimerRunning] = useState(false);
 
   const { question, answers, correctAnswer } = questions[activeQuestion];
+  console.log(questions);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;

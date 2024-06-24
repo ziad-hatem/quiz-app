@@ -235,7 +235,11 @@ const Quiz = ({ questions, userId }: QuizProps) => {
                   </li>
                 ))}
               </ul>
-              <button disabled={!checked} className="font-bold">
+              <button
+                onClick={nextQuestion}
+                disabled={!checked}
+                className="font-bold"
+              >
                 {activeQuestion === questions.length - 1
                   ? "Finish"
                   : "Next Question →"}

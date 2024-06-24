@@ -40,18 +40,18 @@ const page = async () => {
   const now = new Date();
 
   // Check if the user has taken the quiz within the last hour
-  if (
-    dbUser &&
-    dbUser.lastQuizAttempt &&
-    now.getTime() - new Date(dbUser.lastQuizAttempt).getTime() < 3600000
-  ) {
-    return (
-      <div className="text-center">
-        Sorry You can only take the quiz once every hour. Please try again
-        later.
-      </div>
-    );
-  }
+  // if (
+  //   dbUser &&
+  //   dbUser.lastQuizAttempt &&
+  //   now.getTime() - new Date(dbUser.lastQuizAttempt).getTime() < 3600000
+  // ) {
+  //   return (
+  //     <div className="text-center">
+  //       Sorry You can only take the quiz once every hour. Please try again
+  //       later.
+  //     </div>
+  //   );
+  // }
 
   // Update the user's last quiz attempt time
   await prisma.user.update({

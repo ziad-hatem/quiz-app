@@ -2,12 +2,15 @@
   "name": "quiz-yt",
   "version": "0.1.0",
   "private": true,
+
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npx prisma generate",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
+
   "dependencies": {
     "@clerk/nextjs": "^4.29.9",
     "@prisma/client": "^5.10.2",

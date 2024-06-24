@@ -2,13 +2,22 @@
 import { useState, useEffect } from "react";
 import StatCard from "./StatCard";
 
+interface Question {
+  question: string;
+  answers: string[];
+  correctAnswer: string;
+}
+
 interface QuizProps {
-  questions: {
-    question: string;
-    answers: string[];
-    correctAnswer: string;
-  }[];
+  questions: Question[];
   userId: string | undefined;
+}
+
+interface WrongAnswersComponentProps {
+  question: string;
+  answers: string[];
+  correctAnswer: string;
+  selectedAnswerIndex: number | null;
 }
 
 const WrongAnswersComponent = ({
@@ -16,44 +25,47 @@ const WrongAnswersComponent = ({
   answers,
   correctAnswer,
   selectedAnswerIndex,
-}) => {
+}: WrongAnswersComponentProps) => {
   return (
-    <>
-      <div>
-        <h3 className="mb-5 text-2xl font-bold">{question}</h3>
-        <ul>
-          {answers.map((answer: string, idx: number) => (
-            <>
-              <li
-                key={idx}
-                className={`mb-5 py-3 rounded-md px-3
-                ${
-                  answer === correctAnswer
-                    ? "bg-green-600 text-white"
-                    : "bg-red-600 text-white"
-                }
-                ${
-                  answers[selectedAnswerIndex] === answer
-                    ? "!bg-primary text-white"
-                    : ""
-                }
-              `}
-              >
-                <span>{answer}</span>
-              </li>
-            </>
-          ))}
-        </ul>
-      </div>
-    </>
+    <div>
+      <h3 className="mb-5 text-2xl font-bold">{question}</h3>
+      <ul>
+        {answers.map((answer: string, idx: number) => (
+          <li
+            key={idx}
+            className={`mb-5 py-3 rounded-md px-3
+              ${
+                answer === correctAnswer
+                  ? "bg-green-600 text-white"
+                  : "bg-red-600 text-white"
+              }
+              ${
+                answers[selectedAnswerIndex!] === answer
+                  ? "!bg-primary text-white"
+                  : ""
+              }
+            `}
+          >
+            <span>{answer}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
 const Quiz = ({ questions, userId }: QuizProps) => {
   const [activeQuestion, setActiveQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [selectedAnswer, setSelectedAnswer] = useState<string>("");
   const [checked, setChecked] = useState(false);
-  const [wrongAnswer, setWrongAswers] = useState<string[]>([]);
+  const [wrongAnswer, setWrongAnswers] = useState<
+    {
+      question: string;
+      answers: string[];
+      correctAnswer: string;
+      selectedAnswerIndex: number | null;
+    }[]
+  >([]);
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(
     null
   );
@@ -67,13 +79,14 @@ const Quiz = ({ questions, userId }: QuizProps) => {
   const [timerRunning, setTimerRunning] = useState(false);
 
   const { question, answers, correctAnswer } = questions[activeQuestion];
-  const [answerss, setAnswers] = useState([]);
+  const [shuffledAnswers, setShuffledAnswers] = useState<string[]>([]);
 
   const shuffleArray = (array: any[]) => {
     return array.sort(() => Math.random() - 0.5);
   };
+
   useEffect(() => {
-    setAnswers(shuffleArray([...answers]));
+    setShuffledAnswers(shuffleArray([...answers]));
   }, [question]);
 
   useEffect(() => {
@@ -125,12 +138,15 @@ const Quiz = ({ questions, userId }: QuizProps) => {
   };
 
   const nextQuestion = () => {
-    if (answerss[selectedAnswerIndex] !== correctAnswer) {
-      console.log(answerss[selectedAnswerIndex]);
-
-      setWrongAswers([
+    if (shuffledAnswers[selectedAnswerIndex!] !== correctAnswer) {
+      setWrongAnswers([
         ...wrongAnswer,
-        { question, answerss, correctAnswer, selectedAnswerIndex },
+        {
+          question,
+          answers: shuffledAnswers,
+          correctAnswer,
+          selectedAnswerIndex,
+        },
       ]);
     }
     setSelectedAnswerIndex(null);
@@ -203,23 +219,23 @@ const Quiz = ({ questions, userId }: QuizProps) => {
             <div>
               <h3 className="mb-5 text-2xl font-bold">{question}</h3>
               <ul>
-                {answerss.map((answer: string, idx: number) => (
+                {shuffledAnswers.map((answer: string, idx: number) => (
                   <li
                     key={idx}
                     onClick={() => onAnswerSelected(answer, idx)}
                     className={`cursor-pointer mb-5 py-3 rounded-md hover:bg-primary hover:text-white px-3
-                      ${selectedAnswerIndex === idx && "bg-primary text-white"}
+                      ${
+                        selectedAnswerIndex === idx
+                          ? "bg-primary text-white"
+                          : ""
+                      }
                       `}
                   >
                     <span>{answer}</span>
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={nextQuestion}
-                disabled={!checked}
-                className="font-bold"
-              >
+              <button disabled={!checked} className="font-bold">
                 {activeQuestion === questions.length - 1
                   ? "Finish"
                   : "Next Question →"}
@@ -232,7 +248,7 @@ const Quiz = ({ questions, userId }: QuizProps) => {
             <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-10">
               <StatCard
                 title="Percentage"
-                value={`${(results.score / 50) * 100}%`}
+                value={`${(results.score / (questions.length * 5)) * 100}%`}
               />
               <StatCard title="Total Questions" value={questions.length} />
               <StatCard title=" Total Score" value={results.score} />

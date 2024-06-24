@@ -11,10 +11,49 @@ interface QuizProps {
   userId: string | undefined;
 }
 
+const WrongAnswersComponent = ({
+  question,
+  answers,
+  correctAnswer,
+  selectedAnswerIndex,
+}) => {
+  return (
+    <>
+      <div>
+        <h3 className="mb-5 text-2xl font-bold">{question}</h3>
+        <ul>
+          {answers.map((answer: string, idx: number) => (
+            <>
+              <li
+                key={idx}
+                className={`mb-5 py-3 rounded-md px-3
+                ${
+                  answer === correctAnswer
+                    ? "bg-green-600 text-white"
+                    : "bg-red-600 text-white"
+                }
+                ${
+                  answers[selectedAnswerIndex] === answer
+                    ? "!bg-primary text-white"
+                    : ""
+                }
+              `}
+              >
+                <span>{answer}</span>
+              </li>
+            </>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
+};
+
 const Quiz = ({ questions, userId }: QuizProps) => {
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [checked, setChecked] = useState(false);
+  const [wrongAnswer, setWrongAswers] = useState<string[]>([]);
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(
     null
   );
@@ -28,7 +67,14 @@ const Quiz = ({ questions, userId }: QuizProps) => {
   const [timerRunning, setTimerRunning] = useState(false);
 
   const { question, answers, correctAnswer } = questions[activeQuestion];
-  console.log(questions);
+  const [answerss, setAnswers] = useState([]);
+
+  const shuffleArray = (array: any[]) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
+  useEffect(() => {
+    setAnswers(shuffleArray([...answers]));
+  }, [question]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -79,7 +125,16 @@ const Quiz = ({ questions, userId }: QuizProps) => {
   };
 
   const nextQuestion = () => {
+    if (answerss[selectedAnswerIndex] !== correctAnswer) {
+      console.log(answerss[selectedAnswerIndex]);
+
+      setWrongAswers([
+        ...wrongAnswer,
+        { question, answerss, correctAnswer, selectedAnswerIndex },
+      ]);
+    }
     setSelectedAnswerIndex(null);
+
     setResults((prev) =>
       selectedAnswer
         ? {
@@ -126,6 +181,7 @@ const Quiz = ({ questions, userId }: QuizProps) => {
     resetTimer();
     startTimer();
   };
+
   return (
     <div className="min-h-[500px]">
       <div className="max-w-[1500px] mx-auto w-[90%] flex justify-center py-10 flex-col">
@@ -147,7 +203,7 @@ const Quiz = ({ questions, userId }: QuizProps) => {
             <div>
               <h3 className="mb-5 text-2xl font-bold">{question}</h3>
               <ul>
-                {answers.map((answer: string, idx: number) => (
+                {answerss.map((answer: string, idx: number) => (
                   <li
                     key={idx}
                     onClick={() => onAnswerSelected(answer, idx)}
@@ -185,6 +241,12 @@ const Quiz = ({ questions, userId }: QuizProps) => {
                 value={results.correctAnswers}
               />
               <StatCard title="Wrong Answers" value={results.wrongAnswers} />
+            </div>
+            <div className="mt-10">
+              <h1 className="font-bold my-4 text-2xl">Wrong Answers</h1>
+              {wrongAnswer.map((e, i) => (
+                <WrongAnswersComponent {...e} key={i} />
+              ))}
             </div>
             <button
               onClick={() => window.location.reload()}

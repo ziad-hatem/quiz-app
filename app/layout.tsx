@@ -10,7 +10,7 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "CodeQuiz",
+  title: "Quiz",
   description: "Weekly quiz question for developers",
 };
 
@@ -22,9 +22,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={`${raleway.className} min-h-screen`}
-        >
+        <body className={`${raleway.className} min-h-screen`}>
           <LayoutProvider>{children}</LayoutProvider>
         </body>
       </html>

@@ -8,16 +8,14 @@ const Hero = () => {
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none text-dark">
             Ready to take this week's quiz?
           </h1>
-          <p className="text-gray-600">
-            Get ready to ace it.
-          </p>
+          <p className="text-gray-600">Get ready to ace it.</p>
         </div>
         <div className="mt-6">
           <Link
             href={"/quiz"}
             className="inline-flex items-center justify-center rounded-md bg-primary px-8 py-3 text-sm font-medium text-gray-50 shadow transition-colors duration-500 hover:bg-primary/80"
           >
-            I'm ready mf
+            I'm ready
           </Link>
         </div>
       </div>

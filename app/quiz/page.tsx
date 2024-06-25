@@ -32,6 +32,33 @@ const page = async () => {
     return <div>User email not found. Please log in.</div>;
   }
 
+  // Fetch the user's last quiz attempt time
+  const dbUser = await prisma.user.findUnique({
+    where: { email: userEmail },
+  });
+
+  const now = new Date();
+
+  // Check if the user has taken the quiz within the last hour
+  if (
+    dbUser &&
+    dbUser.lastQuizAttempt &&
+    now.getTime() - new Date(dbUser.lastQuizAttempt).getTime() < 3600000
+  ) {
+    return (
+      <div className="text-center">
+        Sorry You can only take the quiz once every hour. Please try again
+        later.
+      </div>
+    );
+  }
+
+  // Update the user's last quiz attempt time
+  await prisma.user.update({
+    where: { email: userEmail },
+    data: { lastQuizAttempt: now },
+  });
+
   return (
     <>
       <Quiz questions={questions} userId={user?.data.user.id} />

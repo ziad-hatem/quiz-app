@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import StatCard from "./StatCard";
+import { Prisma } from "@prisma/client";
 
 interface Question {
   question: string;
@@ -34,11 +35,11 @@ const WrongAnswersComponent = ({
           <li
             key={idx}
             className={`mb-5 py-3 rounded-md px-3
-              ${
-                answer === correctAnswer
-                  ? "bg-green-600 text-white"
-                  : "bg-red-600 text-white"
-              }
+          ${
+            answer === correctAnswer
+              ? "bg-green-600 text-white"
+              : "bg-red-600 text-white"
+          }
               ${
                 answers[selectedAnswerIndex!] === answer
                   ? "!bg-primary text-white"
@@ -61,6 +62,7 @@ const Quiz = ({ questions, userId }: QuizProps) => {
   const [wrongAnswer, setWrongAnswers] = useState<
     {
       question: string;
+
       answers: string[];
       correctAnswer: string;
       selectedAnswerIndex: number | null;
@@ -69,6 +71,7 @@ const Quiz = ({ questions, userId }: QuizProps) => {
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(
     null
   );
+
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState({
     score: 0,
@@ -167,6 +170,7 @@ const Quiz = ({ questions, userId }: QuizProps) => {
       setActiveQuestion((prev) => prev + 1);
     } else {
       setShowResults(true);
+
       stopTimer();
       fetch("/api/quizResults", {
         method: "POST",
